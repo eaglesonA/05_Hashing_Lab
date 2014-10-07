@@ -97,6 +97,7 @@ HashTable<Key,T>::HashTable(){
 template <class Key, class T>
 HashTable<Key,T>::~HashTable() {
   //destructor - delete everything 
+	delete[] backingArray;
 }
 
 template <class Key, class T>
@@ -145,7 +146,15 @@ void HashTable<Key,T>::remove(Key k){
 		backingArray[index].isDel = true;
 		numItems--;
 		numRemoved++;
-	}
+	}/*
+	 while(!backingArray[index].isNull  && !backingArray[index].isDel)
+	 {
+		  if(backingArray[index].k==k)
+			  { backingArray[index].isDel=true; 
+				numItems--;
+				numRemoved++; }
+		 index=(index+1)%backingArraySize;
+	}*/
 }
 
 template <class Key, class T>
@@ -154,20 +163,22 @@ T HashTable<Key,T>::find(Key k){
   while(!backingArray[index].isNull  && !backingArray[index].isDel)
   {
 	  if(backingArray[index].k==k)
-	  { return true;}
+	  { return backingArray[index].x;}
 	  index = (index+1)%backingArraySize;
   }
+  throw std::string("Invalid key in find()");
 }
 
 template <class Key, class T>
 bool HashTable<Key,T>::keyExists(Key k){
   int index=calcIndex(k);
-  while(!backingArray[index].isNull && !backingArray[index].isDel)
+  while(!backingArray[index].isNull)
   {
-	if(backingArray[index].k==k)
+	if(!backingArray[index].isDel && backingArray[index].k==k )
 	 { return true;}
 	index=(index+1)%backingArraySize;
   }
+  return false;
 }
 
 template <class Key, class T>

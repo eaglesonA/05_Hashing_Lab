@@ -143,9 +143,13 @@ void HashTable<Key,T>::remove(Key k){
 
 template <class Key, class T>
 T HashTable<Key,T>::find(Key k){
-  //TODO
-  T dummy;
-  return dummy;
+  int index=calcIndex(k);
+  while(!backingArray[index].isNull)
+  {
+	  if(backingArray[index].k==k && !backingArray[index].isDel)
+	  { return true;}
+	  index = (index+1)%backingArraySize;
+  }
 }
 
 template <class Key, class T>
@@ -166,5 +170,26 @@ void HashTable<Key,T>::grow(){
 	//delete old array
 	//numItems + numRemoved >= backingArraySize/2
 
+	primeNum++;
+	unsigned long doubleSize = hashPrimes[primeNum];
+	HashRecord* newArr = new HashRecord[doubleSize];
 
+	for(unsigned long i=0; i<backingArraySize; i++)
+	{
+		if(!backingArray[i].isDel && !backingArray[i].isNull)
+		{
+			int objIndex=calcIndex(backingArray[i].k);
+			while(!newArr[objIndex].isNull)
+			{objIndex = (objIndex+1)%doubleSize; }
+			newArr[objIndex].k=backingArray[i].k;
+			newArr[objIndex].x=backingArray[i].x;
+			newArr[objIndex].isDel=false;
+			newArr[objIndex].isNull=false;
+		}
+
+	}
+	backingArraySize= doubleSize;
+	delete[] backingArray;
+	backingArray=newArr;
+	numRemoved=0;
 }

@@ -138,15 +138,22 @@ template <class Key, class T>
 void HashTable<Key,T>::remove(Key k){
   //don't delete anything here
  //flag things as isDel. so make isDel true
-	//3 possibilities - isNull, isDel
+//3 possibilities - isNull, isDel
+	int index= calcIndex(k);
+	if(keyExists(k))
+	{
+		backingArray[index].isDel = true;
+		numItems--;
+		numRemoved++;
+	}
 }
 
 template <class Key, class T>
 T HashTable<Key,T>::find(Key k){
   int index=calcIndex(k);
-  while(!backingArray[index].isNull)
+  while(!backingArray[index].isNull  && !backingArray[index].isDel)
   {
-	  if(backingArray[index].k==k && !backingArray[index].isDel)
+	  if(backingArray[index].k==k)
 	  { return true;}
 	  index = (index+1)%backingArraySize;
   }
@@ -154,8 +161,13 @@ T HashTable<Key,T>::find(Key k){
 
 template <class Key, class T>
 bool HashTable<Key,T>::keyExists(Key k){
-  //TODO
-  return false;
+  int index=calcIndex(k);
+  while(!backingArray[index].isNull && !backingArray[index].isDel)
+  {
+	if(backingArray[index].k==k)
+	 { return true;}
+	index=(index+1)%backingArraySize;
+  }
 }
 
 template <class Key, class T>
